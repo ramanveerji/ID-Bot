@@ -5,13 +5,12 @@ from pyrogram.types import Message
 
 @Client.on_message(filters.command("id"))
 async def id_(bot: Client, msg: Message):
-	if not msg.chat.type == "private":
+	if msg.chat.type != "private":
 		main = f"This {msg.chat.type}'s ID is `{msg.chat.id}`"
-		if msg.reply_to_message:
-			if msg.reply_to_message.from_user:
-				main = f"{msg.reply_to_message.from_user.first_name}'s ID is `{msg.reply_to_message.from_user.id}`"
-				if msg.reply_to_message.sticker:
-					main += f"\n\nThis sticker's id is `{msg.reply_to_message.sticker.file_id}`"
+		if msg.reply_to_message and msg.reply_to_message.from_user:
+			main = f"{msg.reply_to_message.from_user.first_name}'s ID is `{msg.reply_to_message.from_user.id}`"
+			if msg.reply_to_message.sticker:
+				main += f"\n\nThis sticker's id is `{msg.reply_to_message.sticker.file_id}`"
 		await msg.reply(main)
 	else:
 		if len(msg.command) == 1:
@@ -32,7 +31,7 @@ async def id_(bot: Client, msg: Message):
 						name = "This User"
 				except IndexError:
 					user = await bot.get_chat(uname)
-					name = '@'+user.username if user.username else user.title
+					name = f'@{user.username}' if user.username else user.title
 				id = user.id
 				await msg.reply(f"{name}'s id is `{id}`", quote=True)
 			except UsernameInvalid:
